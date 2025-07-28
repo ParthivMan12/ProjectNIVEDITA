@@ -3,35 +3,50 @@ const ctx = canvas.getContext('2d');
 const pencil = document.getElementById('pencil');
 
 const img = new Image();
-img.src = 'teacher.png'; // Replace with your actual image name
+img.src = 'teacher.png'; // Replace with your image file
 
 img.onload = () => {
-  const imgWidth = img.width;
-  const imgHeight = img.height;
+  canvas.width = img.width;
+  canvas.height = img.height;
 
-  canvas.width = imgWidth;
-  canvas.height = imgHeight;
+  // Draw image offscreen to get pixel data
+  const offscreen = document.createElement('canvas');
+  offscreen.width = img.width;
+  offscreen.height = img.height;
+  const offCtx = offscreen.getContext('2d');
+  offCtx.drawImage(img, 0, 0);
 
-  let y = 0;
-  const speed = 2; // pixels per frame
+  const imageData = offCtx.getImageData(0, 0, img.width, img.height);
+  const targetData = ctx.createImageData(1, 1); // One pixel
 
-  function drawLine() {
-    if (y >= imgHeight) return;
+  let x = 0, y = 0;
 
-    // Draw horizontal strip from image
-    ctx.drawImage(img, 0, y, imgWidth, speed, 0, y, imgWidth, speed);
+  function drawPixel() {
+    if (y >= img.height) return;
 
-    // Move the pencil along the current y position
-    pencil.style.left = (canvas.offsetLeft + imgWidth - 24) + 'px';
-    pencil.style.top = (canvas.offsetTop + y) + 'px';
+    const index = (y * img.width + x) * 4;
+    for (let i = 0; i < 4; i++) {
+      targetData.data[i] = imageData.data[index + i];
+    }
 
-    y += speed;
-    requestAnimationFrame(drawLine);
+    ctx.putImageData(targetData, x, y);
+
+    // Move pencil
+    pencil.style.left = (canvas.offsetLeft + x - 10) + 'px';
+    pencil.style.top = (canvas.offsetTop + y - 10) + 'px';
+
+    x++;
+    if (x >= img.width) {
+      x = 0;
+      y++;
+    }
+
+    requestAnimationFrame(drawPixel);
   }
 
-  drawLine();
+  drawPixel();
 };
 
 img.onerror = () => {
-  alert("Image failed to load. Make sure the image is in the same folder.");
+  alert("Image failed to load. Make sure 'your-image.png' is in the same folder.");
 };
