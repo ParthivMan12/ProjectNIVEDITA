@@ -1,0 +1,21 @@
+body {
+  text-align: center;
+  font-family: sans-serif;
+  margin-top: 2rem;
+  background: #f7f7f7;
+}
+
+canvas {
+  border: 1px solid #aaa;
+  display: block;
+  margin: 1rem auto;
+  background-color: white;
+}
+
+#pencil {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  z-index: 10;
+}
