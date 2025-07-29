@@ -32,8 +32,8 @@ img.onload = () => {
     ctx.putImageData(targetData, x, y);
 
     // Move pencil
-    pencil.style.left = (canvas.offsetLeft + x - 10) + 'px';
-    pencil.style.top = (canvas.offsetTop + y - 10) + 'px';
+    pencil.style.left = (canvas.offsetLeft + x - 10000) + 'px';
+    pencil.style.top = (canvas.offsetTop + y - 10000) + 'px';
 
     x++;
     if (x >= img.width) {
