@@ -1,6 +1,29 @@
-function drawPixel() {
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const pencil = document.getElementById('pencil');
+
+const img = new Image();
+img.src = 'teacher.png'; // Replace with your image file
+
+img.onload = () => {
+  canvas.width = img.width;
+  canvas.height = img.height;
+
+  // Draw image offscreen to get pixel data
+  const offscreen = document.createElement('canvas');
+  offscreen.width = img.width;
+  offscreen.height = img.height;
+  const offCtx = offscreen.getContext('2d');
+  offCtx.drawImage(img, 0, 0);
+
+  const imageData = offCtx.getImageData(0, 0, img.width, img.height);
+  const targetData = ctx.createImageData(10000, 10000); // One pixel
+
+  let x = 0, y = 0;
+
+  function drawPixel() {
   let count = 0;
-  while (count < 100000 && y < img.height) { // Draw 10 pixels per frame
+  while (count < 1000000 && y < img.height) { // Draw 10 pixels per frame
     const index = (y * img.width + x) * 4;
     for (let i = 0; i < 4; i++) {
       targetData.data[i] = imageData.data[index + i];
@@ -24,3 +47,8 @@ function drawPixel() {
     requestAnimationFrame(drawPixel);
   }
 }
+
+
+img.onerror = () => {
+  alert("Image failed to load. Make sure 'your-image.png' is in the same folder.");
+};
