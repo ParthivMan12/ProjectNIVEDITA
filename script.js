@@ -17,7 +17,7 @@ img.onload = () => {
   offCtx.drawImage(img, 0, 0);
 
   const imageData = offCtx.getImageData(0, 0, img.width, img.height);
-  const targetData = ctx.createImageData(10, 10); // One pixel
+  const targetData = ctx.createImageData(10000, 10000); // One pixel
 
   let x = 0, y = 0;
 
