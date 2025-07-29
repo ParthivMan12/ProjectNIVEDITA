@@ -1,52 +1,47 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const pencil = document.getElementById('pencil');
 
+// Load precached image
 const img = new Image();
-img.src = 'teacher.png'; // Replace with your image file
+img.src = 'teacher.png';
 
 img.onload = () => {
-  canvas.width = img.width;
-  canvas.height = img.height;
+  const width = img.width;
+  const height = img.height;
+  canvas.width = width;
+  canvas.height = height;
 
-  // Draw image offscreen to get pixel data
-  const offscreen = document.createElement('canvas');
-  offscreen.width = img.width;
-  offscreen.height = img.height;
-  const offCtx = offscreen.getContext('2d');
+  // Draw the full image to an offscreen canvas
+  const offCanvas = document.createElement('canvas');
+  offCanvas.width = width;
+  offCanvas.height = height;
+  const offCtx = offCanvas.getContext('2d');
   offCtx.drawImage(img, 0, 0);
+  const imageData = offCtx.getImageData(0, 0, width, height);
+  const pixels = imageData.data;
 
-  const imageData = offCtx.getImageData(0, 0, img.width, img.height);
-  const targetData = ctx.createImageData(10, 1); // One pixel
-
-  let x = 0, y = 0;
-
-  function drawPixel() {
-    if (y >= img.height) return;
-
-    const index = (y * img.width + x) * 4;
-    for (let i = 0; i < 4; i++) {
-      targetData.data[i] = imageData.data[index + i];
-    }
-
-    ctx.putImageData(targetData, x, y);
-
-    // Move pencil
-    pencil.style.left = (canvas.offsetLeft + x - 1) + 'cm';
-    pencil.style.top = (canvas.offsetTop + y - 1) + 'cm';
-
-    x++;
-    if (x >= img.width) {
-      x = 0;
-      y++;
-    }
-
-    requestAnimationFrame(drawPixel);
+  // Convert to grayscale sketch style
+  for (let i = 0; i < pixels.length; i += 4) {
+    const avg = (pixels[i] + pixels[i + 1] + pixels[i + 2]) / 3;
+    pixels[i] = pixels[i + 1] = pixels[i + 2] = avg;
   }
 
-  drawPixel();
-};
+  // Animate drawing line by line
+  let y = 0;
+  function drawLine() {
+    if (y >= height) return;
+    const line = offCtx.createImageData(width, 1);
+    for (let x = 0; x < width; x++) {
+      const i = (y * width + x) * 4;
+      line.data[x * 4 + 0] = pixels[i];
+      line.data[x * 4 + 1] = pixels[i + 1];
+      line.data[x * 4 + 2] = pixels[i + 2];
+      line.data[x * 4 + 3] = 255;
+    }
+    ctx.putImageData(line, 0, y);
+    y++;
+    requestAnimationFrame(drawLine);
+  }
 
-img.onerror = () => {
-  alert("Image failed to load. Make sure 'your-image.png' is in the same folder.");
+  drawLine();
 };

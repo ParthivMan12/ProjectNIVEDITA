@@ -3,13 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ProjectNIVEDITA</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Project: NIVEDITA</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <h1>Goodbye, Nivedita mam</h1>
+  <h1>A gift.</h1>
+  
+  <div id="overlay">Press play to a surprise 🎵</div>
+
   <canvas id="canvas"></canvas>
-  <img id="pencil" src="https://cdn-icons-png.flaticon.com/512/1061/1061133.png" alt="Pencil" />
+
+  <button id="play-btn">▶ Play surprise</button>
+  <audio id="music">
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
 
   <script src="script.js"></script>
 </body>
