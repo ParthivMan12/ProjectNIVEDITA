@@ -35,7 +35,7 @@ img.onload = () => {
     pencil.style.left = (canvas.offsetLeft + x - 10000) + 'px';
     pencil.style.top = (canvas.offsetTop + y - 10000) + 'px';
 
-    x++;
+    x = x + 100000;
     if (x >= img.width) {
       x = 0;
       y++;
