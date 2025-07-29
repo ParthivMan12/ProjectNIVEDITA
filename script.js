@@ -1,53 +1,52 @@
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const pencil = document.getElementById('pencil');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const pencil = document.getElementById('pencil');
 
-    const img = new Image();
-    img.src = 'teacher.png'; // Make sure this image exists
+const img = new Image();
+img.src = 'teacher.png'; // Replace with your image file
 
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
+img.onload = () => {
+  canvas.width = img.width;
+  canvas.height = img.height;
 
-      // Offscreen canvas to get pixel data
-      const offscreen = document.createElement('canvas');
-      offscreen.width = img.width;
-      offscreen.height = img.height;
-      const offCtx = offscreen.getContext('2d');
-      offCtx.drawImage(img, 0, 0);
+  // Draw image offscreen to get pixel data
+  const offscreen = document.createElement('canvas');
+  offscreen.width = img.width;
+  offscreen.height = img.height;
+  const offCtx = offscreen.getContext('2d');
+  offCtx.drawImage(img, 0, 0);
 
-      const imageData = offCtx.getImageData(0, 0, img.width, img.height);
+  const imageData = offCtx.getImageData(0, 0, img.width, img.height);
+  const targetData = ctx.createImageData(10, 1); // One pixel
 
-      let x = 0;
-      let barHeight = 10; // Speed: draw 10 vertical pixels at once
+  let x = 0, y = 0;
 
-      function drawBar() {
-        if (x >= img.width) return;
+  function drawPixel() {
+    if (y >= img.height) return;
 
-        // Draw a vertical bar of pixels from (x, 0) to (x, height)
-        const column = ctx.createImageData(1, img.height);
-        for (let y = 0; y < img.height; y++) {
-          const srcIndex = (y * img.width + x) * 4;
-          const destIndex = y * 4;
-          for (let i = 0; i < 4; i++) {
-            column.data[destIndex + i] = imageData.data[srcIndex + i];
-          }
-        }
+    const index = (y * img.width + x) * 4;
+    for (let i = 0; i < 4; i++) {
+      targetData.data[i] = imageData.data[index + i];
+    }
 
-        ctx.putImageData(column, x, 0);
+    ctx.putImageData(targetData, x, y);
 
-        // Move pencil to the latest x position
-        pencil.style.left = (canvas.offsetLeft + x) + 'px';
-        pencil.style.top = (canvas.offsetTop + img.height / 2) + 'px';
+    // Move pencil
+    pencil.style.left = (canvas.offsetLeft + x - 1) + 'cm';
+    pencil.style.top = (canvas.offsetTop + y - 1) + 'cm';
 
-        x += 5; // Increase to draw wider bars, e.g., 5 pixels at once
+    x++;
+    if (x >= img.width) {
+      x = 0;
+      y++;
+    }
 
-        requestAnimationFrame(drawBar);
-      }
+    requestAnimationFrame(drawPixel);
+  }
 
-      drawBar();
-    };
+  drawPixel();
+};
 
-    img.onerror = () => {
-      alert("Image failed to load. Make sure 'teacher.png' is in the same folder.");
-    };
+img.onerror = () => {
+  alert("Image failed to load. Make sure 'your-image.png' is in the same folder.");
+};
